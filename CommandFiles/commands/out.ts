@@ -5,10 +5,10 @@ import { UNIRedux } from "@cassidy/unispectra";
 export const meta: CassidySpectra.CommandMeta = {
   name: "leave",
   description: "Make the bot leave the current group",
-  otherNames: ["out", "goodbye"],
+  otherNames: ["out", "flyhigh"],
   version: "1.0.0",
   usage: "{prefix}{name}",
-  noprefix: true,
+  noPrefix: true,
   category: "Admin",
   author: "AzukiDan",
   permissions: [1, 2], // Role 1 and 2 only
