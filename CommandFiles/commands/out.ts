@@ -8,6 +8,7 @@ export const meta: CassidySpectra.CommandMeta = {
   otherNames: ["out", "goodbye"],
   version: "1.0.0",
   usage: "{prefix}{name}",
+  noprefix: true,
   category: "Admin",
   author: "AzukiDan",
   permissions: [1, 2], // Role 1 and 2 only
