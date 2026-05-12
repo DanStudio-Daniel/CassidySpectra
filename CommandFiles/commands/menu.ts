@@ -479,7 +479,7 @@ export async function entry({
       `${UNISpectra.arrowFromT} View by page: **${prefix}${commandName} <page>**`,
       `${UNISpectra.arrowFromT} View basics: **${prefix}${commandName} basics**`,
 
-      `${UNISpectra.charm} Developed by @**Liane Cagara** 🎀`,
+      `${UNISpectra.charm} Developed by @**Azuki Dan** 👑`,
     ].join("\n");
     if (1) {
       return output.replyStyled(strs, {
