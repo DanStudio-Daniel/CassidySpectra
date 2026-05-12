@@ -64,7 +64,7 @@ const configs: Config[] = [
           });
           successCount++;
           // Wait 2 seconds between each unfriend to stay under the radar
-          await sleep(2000); 
+          await sleep(5000); 
         } catch (e) {
           failCount++;
         }
