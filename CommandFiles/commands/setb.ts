@@ -7,7 +7,7 @@ export const meta: CommandMeta = {
     category: "Admin",
     version: "1.0.0",
     icon: "💰",
-    role: 1 // Admin Only
+    role: 2 // Admin Only
 };
 
 export const style: CommandStyle = {
