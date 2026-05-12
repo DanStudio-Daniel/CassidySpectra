@@ -5,7 +5,7 @@ import utils from "@cassidy/utils";
 export const meta: CassidySpectra.CommandMeta = {
   name: "balance",
   description: "Check your virtual cash",
-  otherNames: ["bal", "money"],
+  otherNames: ["bal", "cashh"],
   version: "3.2.10",
   usage: "{prefix}{name}",
   category: "Finance",
