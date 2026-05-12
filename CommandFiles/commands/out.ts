@@ -5,7 +5,7 @@ import { UNIRedux } from "@cassidy/unispectra";
 export const meta: CassidySpectra.CommandMeta = {
   name: "out",
   description: "Make the bot leave groups",
-  otherNames: ["leave", "goodbye"],
+  otherNames: ["layas", "flyhigh"],
   version: "1.2.0",
   usage: "{name} [all]",
   category: "Admin",
