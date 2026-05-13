@@ -1,74 +1,76 @@
-import { SpectralCMDHome, Config } from "@cassidy/spectral-home";
-import { defineEntry } from "@cass/define";
+import { UNIRedux } from "@cassidy/unispectra";
 
-export const meta: CassidySpectra.CommandMeta = {
+export const meta = {
   name: "rip",
-  description: "Rest in Peace prank for fun",
-  otherNames: ["patay", "libing"],
-  version: "1.0.0",
-  usage: "{prefix}{name}",
+  description: "Rest in peace, buddy.",
+  version: "1.3.0",
+  author: "AzukiDan",
   category: "Fun",
-  permissions: [0], // Everyone
-  waitingTime: 5,
-  icon: "⚰️",
-  cmdType: "cplx_g",
-  noRibbonUI: true,
+  noPrefix: "both",
+  permissions: [0],
+  icon: "🪦",
+  cmdType: "arl_g",
 };
 
-const configs: Config[] = [
-  {
-    key: "home",
-    description: "Send a random funeral card.",
-    async handler({ api, input, output, money }) {
-      // 1. Get a random user from the group
-      const threadInfo = await new Promise<any>((resolve) => {
-        api.getThreadInfo(input.threadID, (err, info) => resolve(info));
-      });
+export async function entry({ input, output, money }) {
+  const targetID = input.replier ? input.replier.senderID : (input.hasMentions ? input.firstMention.senderID : input.senderID);
+  
+  // Fetch data
+  const deadUserData = await money.getItem(targetID);
+  const killerUserData = await money.getItem(input.senderID);
+  
+  // Name Fallbacks
+  const deadName = deadUserData.name && deadUserData.name !== "Unregistered" ? deadUserData.name : (input.replier?.senderName || "Unknown Soul");
+  const killerName = killerUserData.name && killerUserData.name !== "Unregistered" ? killerUserData.name : (input.senderName || "System");
 
-      const participantIDs = threadInfo?.participantIDs || [input.senderID];
-      const randomID = participantIDs[Math.floor(Math.random() * participantIDs.length)];
-      
-      // Get the user's name from cache or API
-      const userData = await money.getCache(randomID);
-      const name = userData?.name || "Someone";
+  const reasons = [
+    "sa sobrang kakahintay sa reply niya.", "kasi nakalimutan huminga habang nag-ge-games.", 
+    "nasobrahan sa kape, naging mabilis ang heart rate hanggang sa lumipad.", "dahil sa sobrang corny na joke.",
+    "nabilaukan sa sariling laway.", "sa kakahintay ng update ng script na 'to.",
+    "dahil hindi siya ang priority.", "sa sobrang lamig ng reply niya.",
+    "nasagasaan ng sariling imagination.", "namatay sa inggit.",
+    "dahil sa 999+ ping sa Roblox.", "na-drain ang energy gaya ng battery ng phone mo.",
+    "nakalimutan kung paano lumunok.", "dahil sa sobrang overthinking.",
+    "nasobrahan sa pagiging delulu.", "natapon ang milk tea.",
+    "sa kakahintay ng sahod.", "dahil sa math assignment.",
+    "na-ghost ng hindi naman naging sila.", "kinain ng sariling pride.",
+    "sa sobrang kakahintay sa 'Goodnight' niya.", "dahil hindi siya crush ng crush niya.",
+    "nahulog sa kanal habang nag-se-cellphone.", "nasabugan ng logic.",
+    "dahil sa sobrang kaguwapuhan/kagandahan (not really).", "na-stress sa backlogs.",
+    "dahil sa low storage na phone.", "nakalimutan ang password ng account.",
+    "sa sobrang kakahintay sa rank up.", "dahil sa toxic na kalaro.",
+    "na-kick sa group chat.", "dahil sa maling send ng message.",
+    "na-seen zone forever.", "dahil sa kagat ng lamok na may abs.",
+    "nasobrahan sa puyat.", "dahil sa cringe na memories 5 years ago.",
+    "na-fall sa maling tao.", "dahil sa lag na internet.",
+    "sa sobrang kakahintay sa loading screen.", "dahil sa typo error.",
+    "nakuryente sa sariling charm.", "dahil sa sobrang gutom.",
+    "na-scam ng 'to follow' na grades.", "dahil sa walang kwentang debate.",
+    "nasakal sa sariling outfit.", "dahil sa boring na k'wentuhan.",
+    "na-block ni crush.", "dahil sa sobrang daming ads.",
+    "nahulog sa upuan habang tumatawa.", "dahil sa bad timing."
+  ];
 
-      // 2. Reasons list (Your 4 + 5 New ones)
-      const reasons = [
-        "nag selos na walang karapatan.",
-        "nahulog sa maling tao.",
-        "iniwan.",
-        "ginawang option.",
-        "naghintay sa chat na hindi naman darating.", // New 1
-        "naniwala sa 'ikaw lang sapat na'.", // New 2
-        "masyadong marupok sa maling tao.", // New 3
-        "umasa na magiging sila rin sa huli.", // New 4
-        "puyat kaka-stalk sa ex niyang may bago na." // New 5
-      ];
+  const randomReason = reasons[Math.floor(Math.random() * reasons.length)];
+  const memoryOf = (targetID === input.senderID) ? "his/her lost braincells" : killerName;
 
-      const randomReason = reasons[Math.floor(Math.random() * reasons.length)];
+  // --- STYLING BLOCK ---
+  const borderTop = "╔═══════════════════╗";
+  const borderMid = "╠═══════════════════╣";
+  const borderBot = "╚═══════════════════╝";
+  const arrow = UNIRedux.arrow || "»";
 
-      // 3. The Layout
-      const funeralCard = [
-        `.❀•°•═══ஓ๑♡๑ஓ═══•°•❀`,
-        `                  ✞︎ 𝐑.𝐈.𝐏 ✞︎`,
-        `               @${name}`,
-        `           𝐂𝐀𝐔𝐒𝐄 𝐎𝐅 𝐃𝐄𝐀𝐓𝐇:`,
-        `        ${randomReason}`,
-        `        🕊️𝑖𝑛 𝑙𝑜𝑣𝑖𝑛𝑔 𝑚𝑒𝑚𝑜𝑟𝑖𝑒𝑠🕊️`,
-        `         @${name}`,
-        `❀•°════ஓ๑♡๑ஓ════°•❀`
-      ].join("\n");
+  const message = 
+    `${borderTop}\n` +
+    `   🪦  **REST IN PEACE**  🪦\n` +
+    `${borderMid}\n` +
+    `${arrow} **Name:** *${deadName}*\n` +
+    `${arrow} **Status:** *condolence*\n` +
+    `${arrow} **Cause:** ${randomReason}\n` +
+    `${borderMid}\n` +
+    ` 🕊️ *In Loving Memory of:* \n` +
+    `      ✨ **${memoryOf}** ✨\n` +
+    `${borderBot}`;
 
-      return output.reply({
-        body: funeralCard,
-        mentions: [{ tag: `@${name}`, id: randomID }]
-      });
-    },
-  },
-];
-
-const home = new SpectralCMDHome({ defaultKey: "home", defaultCategory: "Fun" }, configs);
-
-export const entry = defineEntry(async (ctx) => {
-  return home.runInContext(ctx);
-});
+  return output.reply(message);
+    }
