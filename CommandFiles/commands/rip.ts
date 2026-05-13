@@ -2,37 +2,42 @@ import { UNIRedux } from "@cassidy/unispectra";
 
 export const meta = {
   name: "rip",
-  description: "Rest in peace, buddy (Hugot Edition)",
-  version: "1.4.0",
+  description: "Shortened borders and no-prefix support.",
+  version: "1.6.0",
   author: "AzukiDan",
   category: "Fun",
-  noPrefix: "both",
   permissions: [0],
+  noPrefix: true, // Enabled as requested
   icon: "🪦",
   cmdType: "arl_g",
 };
 
-export async function entry({ input, output, money }) {
-  // 1. Identify the target (The one who "died")
+export async function entry({ input, output, money, api }) {
+  // 1. Identify Target
   const targetID = input.replier ? input.replier.senderID : (input.hasMentions ? input.firstMention.senderID : input.senderID);
   
-  // 2. Get random users from the thread (excluding the dead one)
-  const threadUsers = input.threadParticipants || []; 
-  const potentialMourners = threadUsers.filter(id => id !== targetID);
-  
-  // Pick a random mourner or fallback to the sender if thread is empty
-  const randomMournerID = potentialMourners.length > 0 
-    ? potentialMourners[Math.floor(Math.random() * potentialMourners.length)]
-    : input.senderID;
+  // 2. Fetch Thread Participants for Random Mourner
+  const threadInfo = await api.getThreadInfo(input.threadID);
+  const participantIDs = threadInfo.participantIDs;
 
-  // 3. Fetch names from DB or Context
+  // 3. Exclude Dead User and Bot
+  const filteredParticipants = participantIDs.filter(id => id !== targetID && id !== api.getCurrentUserID());
+
+  let randomMournerID;
+  if (filteredParticipants.length > 0) {
+    randomMournerID = filteredParticipants[Math.floor(Math.random() * filteredParticipants.length)];
+  } else {
+    randomMournerID = "0";
+  }
+
+  // 4. Fetch Names
   const deadData = await money.getItem(targetID);
-  const mournerData = await money.getItem(randomMournerID);
+  const mournerData = randomMournerID !== "0" ? await money.getItem(randomMournerID) : { name: "Someone who didn't care" };
 
   const deadName = deadData.name && deadData.name !== "Unregistered" ? deadData.name : "Unregistered Soul";
   const mournerName = mournerData.name && mournerData.name !== "Unregistered" ? mournerData.name : "A Stranger";
 
-  // 4. Massive Hugot Reasons (30+ additions)
+  // 5. Hugot Reasons
   const hugotReasons = [
     "pinaasa hanggang sa naging bato.", "nagselos nang walang karapatan.",
     "naging option pero hindi naging choice.", "akto na parang sila, pero hindi naman pala.",
@@ -56,7 +61,7 @@ export async function entry({ input, output, money }) {
 
   const randomHugot = hugotReasons[Math.floor(Math.random() * hugotReasons.length)];
 
-  // --- STYLING ---
+  // --- STYLING (Shortened Borders) ---
   const borderTop = "╔═════════════════╗";
   const borderMid = "╠═════════════════╣";
   const borderBot = "╚═════════════════╝";
@@ -64,14 +69,14 @@ export async function entry({ input, output, money }) {
 
   const message = 
     `${borderTop}\n` +
-    `   🪦  **REST IN PEACE**  🪦\n` +
+    `  🪦  **REST IN PEACE**  🪦\n` +
     `${borderMid}\n` +
-    `${arrow} **Name:** @**${deadName}**\n` +
+    `${arrow} **Name:** **${deadName}**\n` +
     `${arrow} **Cause:** ${randomHugot}\n` +
     `${borderMid}\n` +
-    ` 🕊️ *In Loving Memory of:* \n` +
-    `      ✨ @**${mournerName}** ✨\n` +
+    ` 🕊️ **In Loving Memory of:** \n` +
+    `      ✨ **${mournerName}** ✨\n` +
     `${borderBot}`;
 
   return output.reply(message);
-}
+    }
