@@ -2,8 +2,8 @@ import { UNIRedux } from "@cassidy/unispectra";
 
 export const meta = {
   name: "rip",
-  description: "Rest in peace, buddy.",
-  version: "1.3.0",
+  description: "Rest in peace, buddy (Hugot Edition)",
+  version: "1.4.0",
   author: "AzukiDan",
   category: "Fun",
   noPrefix: "both",
@@ -13,64 +13,65 @@ export const meta = {
 };
 
 export async function entry({ input, output, money }) {
+  // 1. Identify the target (The one who "died")
   const targetID = input.replier ? input.replier.senderID : (input.hasMentions ? input.firstMention.senderID : input.senderID);
   
-  // Fetch data
-  const deadUserData = await money.getItem(targetID);
-  const killerUserData = await money.getItem(input.senderID);
+  // 2. Get random users from the thread (excluding the dead one)
+  const threadUsers = input.threadParticipants || []; 
+  const potentialMourners = threadUsers.filter(id => id !== targetID);
   
-  // Name Fallbacks
-  const deadName = deadUserData.name && deadUserData.name !== "Unregistered" ? deadUserData.name : (input.replier?.senderName || "Unknown Soul");
-  const killerName = killerUserData.name && killerUserData.name !== "Unregistered" ? killerUserData.name : (input.senderName || "System");
+  // Pick a random mourner or fallback to the sender if thread is empty
+  const randomMournerID = potentialMourners.length > 0 
+    ? potentialMourners[Math.floor(Math.random() * potentialMourners.length)]
+    : input.senderID;
 
-  const reasons = [
-    "sa sobrang kakahintay sa reply niya.", "kasi nakalimutan huminga habang nag-ge-games.", 
-    "nasobrahan sa kape, naging mabilis ang heart rate hanggang sa lumipad.", "dahil sa sobrang corny na joke.",
-    "nabilaukan sa sariling laway.", "sa kakahintay ng update ng script na 'to.",
-    "dahil hindi siya ang priority.", "sa sobrang lamig ng reply niya.",
-    "nasagasaan ng sariling imagination.", "namatay sa inggit.",
-    "dahil sa 999+ ping sa Roblox.", "na-drain ang energy gaya ng battery ng phone mo.",
-    "nakalimutan kung paano lumunok.", "dahil sa sobrang overthinking.",
-    "nasobrahan sa pagiging delulu.", "natapon ang milk tea.",
-    "sa kakahintay ng sahod.", "dahil sa math assignment.",
-    "na-ghost ng hindi naman naging sila.", "kinain ng sariling pride.",
-    "sa sobrang kakahintay sa 'Goodnight' niya.", "dahil hindi siya crush ng crush niya.",
-    "nahulog sa kanal habang nag-se-cellphone.", "nasabugan ng logic.",
-    "dahil sa sobrang kaguwapuhan/kagandahan (not really).", "na-stress sa backlogs.",
-    "dahil sa low storage na phone.", "nakalimutan ang password ng account.",
-    "sa sobrang kakahintay sa rank up.", "dahil sa toxic na kalaro.",
-    "na-kick sa group chat.", "dahil sa maling send ng message.",
-    "na-seen zone forever.", "dahil sa kagat ng lamok na may abs.",
-    "nasobrahan sa puyat.", "dahil sa cringe na memories 5 years ago.",
-    "na-fall sa maling tao.", "dahil sa lag na internet.",
-    "sa sobrang kakahintay sa loading screen.", "dahil sa typo error.",
-    "nakuryente sa sariling charm.", "dahil sa sobrang gutom.",
-    "na-scam ng 'to follow' na grades.", "dahil sa walang kwentang debate.",
-    "nasakal sa sariling outfit.", "dahil sa boring na k'wentuhan.",
-    "na-block ni crush.", "dahil sa sobrang daming ads.",
-    "nahulog sa upuan habang tumatawa.", "dahil sa bad timing."
+  // 3. Fetch names from DB or Context
+  const deadData = await money.getItem(targetID);
+  const mournerData = await money.getItem(randomMournerID);
+
+  const deadName = deadData.name && deadData.name !== "Unregistered" ? deadData.name : "Unregistered Soul";
+  const mournerName = mournerData.name && mournerData.name !== "Unregistered" ? mournerData.name : "A Stranger";
+
+  // 4. Massive Hugot Reasons (30+ additions)
+  const hugotReasons = [
+    "pinaasa hanggang sa naging bato.", "nagselos nang walang karapatan.",
+    "naging option pero hindi naging choice.", "akto na parang sila, pero hindi naman pala.",
+    "minahal siya, pero kaibigan lang ang tingin sa kanya.", "iniwan sa ere nung kailangan na.",
+    "nag-antay sa chat na 'delivered' lang forever.", "pangalawa sa puso, pero huli sa priority.",
+    "nasobrahan sa pagiging marupok.", "nagmahal nang tapat, pero binalewala lang.",
+    "naging sandalan nung malungkot siya, pero binalikan din yung nanakit sa kanya.",
+    "umasa sa 'see you soon' na hindi na dumating.", "nasaktan sa biro na may katotohanan.",
+    "nahulog sa taong hindi siya kayang saluhin.", "pinagpalit sa taong kachat lang pala niya kagabi.",
+    "naghintay sa sagot na 'oo', pero 'bahala na' ang nakuha.", "iniwan nung wala nang pakinabang.",
+    "nagpuyat para sa kanya, pero siya tulog na pala sa iba.", "nasakal sa pagmamahal na hindi naman sa kanya.",
+    "naging rebound lang sa larong hindi siya player.", "nagmahal ng patago, nasaktan ng todo.",
+    "binigay lahat, pero 'kulang pa rin' ang sagot.", "naging extra sa storya nilang dalawa.",
+    "umasa sa mga pangakong nakasulat sa tubig.", "pinagtagpo pero hindi itinadhana.",
+    "naghintay sa tamang panahon na hindi naman dumating.", "naging pampalipas oras lang nung boring ang mundo niya.",
+    "nanatiling tapat sa taong marami palang iba.", "naging taga-comfort nung iniwan siya ng mahal niya.",
+    "nagtiwala sa mga salitang 'ikaw lang', 'yon pala 'ikaw lang ang kausap sa oras na 'to'.",
+    "nasaktan sa pag-alis na walang paalam.", "naging pangarap na hanggang panaginip na lang.",
+    "umasa sa spark na mabilis ding nawala.", "nagmahal sa taong hanggang 'friend zone' lang ang kaya."
   ];
 
-  const randomReason = reasons[Math.floor(Math.random() * reasons.length)];
-  const memoryOf = (targetID === input.senderID) ? "his/her lost braincells" : killerName;
+  const randomHugot = hugotReasons[Math.floor(Math.random() * hugotReasons.length)];
 
-  // --- STYLING BLOCK ---
-  const borderTop = "╔═══════════════════╗";
-  const borderMid = "╠═══════════════════╣";
-  const borderBot = "╚═══════════════════╝";
+  // --- STYLING ---
+  const borderTop = "╔═════════════════╗";
+  const borderMid = "╠═════════════════╣";
+  const borderBot = "╚═════════════════╝";
   const arrow = UNIRedux.arrow || "»";
 
   const message = 
     `${borderTop}\n` +
     `   🪦  **REST IN PEACE**  🪦\n` +
     `${borderMid}\n` +
-    `${arrow} **Name:** *${deadName}*\n` +
-    `${arrow} **Status:** *condolence*\n` +
-    `${arrow} **Cause:** ${randomReason}\n` +
+    `${arrow} **Name:** @**${deadName}**\n` +
+    `${arrow} **Cause:** ${randomHugot}\n` +
     `${borderMid}\n` +
     ` 🕊️ *In Loving Memory of:* \n` +
-    `      ✨ **${memoryOf}** ✨\n` +
+    `      ✨ @**${mournerName}** ✨\n` +
     `${borderBot}`;
 
   return output.reply(message);
-    }
+}
