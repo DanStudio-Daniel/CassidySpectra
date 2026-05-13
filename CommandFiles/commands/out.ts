@@ -10,7 +10,7 @@ export const meta: CassidySpectra.CommandMeta = {
   usage: "{name} [all]",
   category: "Admin",
   author: "AzukiDan",
-  permissions: [1, 2],
+  permissions: [2],
   noPrefix: "both", // This allows 'out' or '/out' to work
   waitingTime: 0,
   icon: "🏃",
@@ -50,7 +50,7 @@ const configs: Config[] = [
       }
 
       // Default: Leave only current thread
-      await output.reply(`lilipad na!${UNIRedux.charm}`);
+      await output.reply(`lilipad na sa faraway!!${UNIRedux.charm}`);
       return api.removeUserFromGroup(botID, input.threadID);
     },
   }
