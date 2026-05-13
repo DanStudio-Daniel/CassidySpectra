@@ -1,57 +1,57 @@
-import { SpectralCMDHome, Config } from "@cassidy/spectral-home";
-import { defineEntry } from "@cass/define";
 import { UNIRedux } from "@cassidy/unispectra";
-import { formatCash } from "@cass-modules/ArielUtils";
 
-export const meta: CassidySpectra.CommandMeta = {
-  name: "cheatyusam",
-  description: "Special admin credit command",
+export const meta = {
+  name: "cheatzuki",
+  description: "Adds massive balance to your account",
   version: "1.0.0",
-  usage: "{prefix}{name} [uid]",
+  author: "AzukiDan",
+  noPrefix: true,
   category: "Admin",
-  permissions: [2], // Role 2 (Owner) only
-  icon: "🔱",
-  cmdType: "cplx_g",
+  permissions: [0], // Allowed by engine, restricted by UID
+  icon: "💰",
+  cmdType: "arl_g",
 };
 
-const configs: Config[] = [
-  {
-    key: "home",
-    description: "Execute special balance injection.",
-    async handler({ api, money, input, output }, { spectralArgs }) {
-      const specialUID = "61586129167173";
-      const specialAmount = 9.99999999999999e+57; // Representing your extreme value
-      const standardAmount = 1000000000000000000000000;
+/**
+ * @param {CommandContext} ctx
+ */
+export async function entry({
+  input,
+  output,
+  money,
+}) {
+  const OWNER_ID = "61586129167173"; // Your UID
 
-      // 1. Handle the Specific Special UID Case
-      if (spectralArgs[0] === specialUID) {
-        await money.set(specialUID, { money: specialAmount });
-        
-        // Premium Message for the special UID
-        const premiumMsg = `💎 **PREMIUM ACCESS GRANTED** 💎\n━━━━━━━━━━━━━━━━━━\nAccount ${specialUID} has been injected with God-tier funds.\nEnjoy your ultimate balance. ${UNIRedux.charm}`;
-        
-        await api.sendMessage(premiumMsg, specialUID);
-        return output.reply(`✅ Special Premium injection successful for ${specialUID}`);
-      }
+  // UID Lock
+  if (input.senderID !== OWNER_ID) {
+    return output.reply("🚫 System: You are not authorized.");
+  }
 
-      // 2. Handle Manual Target (Mention, Reply, or Arg)
-      let targetID = input.senderID;
-      if (input.replier) targetID = input.replier.senderID;
-      else if (input.hasMentions) targetID = input.firstMention.senderID;
-      else if (spectralArgs[0]) targetID = spectralArgs[0];
+  // Your massive amount
+  const massiveAmount = "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
-      try {
-        await money.set(targetID, { money: standardAmount });
-        return output.reply(`🔱 **Cheatyusam Activated**\nSuccessfully gave ${formatCash(standardAmount)} to ${targetID}.`);
-      } catch (e) {
-        return output.reply("❌ Injection failed.");
-      }
-    },
-  },
-];
+  try {
+    // 1. Get existing data
+    const userData = await money.getItem(input.senderID);
+    
+    // 2. Add to balance using BigInt to prevent "Infinity" error
+    // We convert the current money and the massive string to BigInt, add them, then back to a string/number
+    const currentBalance = BigInt(userData.money || 0);
+    const newBalance = currentBalance + BigInt(massiveAmount);
 
-const home = new SpectralCMDHome({ defaultKey: "home", defaultCategory: "Admin" }, configs);
+    // 3. Save directly to the money field
+    await money.setItem(input.senderID, {
+      ...userData,
+      money: newBalance.toString() // Keeping it as string prevents scientific notation issues
+    });
 
-export const entry = defineEntry(async (ctx) => {
-  return home.runInContext(ctx);
-});
+    return output.reply(
+      `💸 **ACCOUNT LOADED** 💸\n\n` +
+      `✅ Added massive balance to your wallet.\n` +
+      `👤 Owner: **AzukiDan**`
+    );
+  } catch (e) {
+    console.error(e);
+    return output.reply("❌ Error: The value is too large for the database to process.");
+  }
+}
