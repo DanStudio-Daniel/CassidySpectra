@@ -3,7 +3,7 @@ import { defineEntry } from "@cass/define";
 import { UNIRedux } from "@cassidy/unispectra";
 
 export const meta: CassidySpectra.CommandMeta = {
-  name: "out",
+  name: "leave",
   description: "Make the bot leave groups",
   otherNames: ["layas", "flyhigh"],
   version: "1.2.0",
@@ -50,7 +50,7 @@ const configs: Config[] = [
       }
 
       // Default: Leave only current thread
-      await output.reply(`lilipad na sa faraway!!${UNIRedux.charm}`);
+      await output.reply(`**FH**\n••••••••••••••••\nlilipad na sa faraway!!${UNIRedux.charm}`);
       return api.removeUserFromGroup(botID, input.threadID);
     },
   }
