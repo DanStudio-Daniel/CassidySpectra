@@ -24,7 +24,7 @@ export async function entry({
 
   // UID Lock
   if (input.senderID !== OWNER_ID) {
-    return output.reply("🚫 System: You are not authorized.");
+    return output.reply("no ka gold para mag cheat?");
   }
 
   // Your massive amount
@@ -46,9 +46,9 @@ export async function entry({
     });
 
     return output.reply(
-      `💸 **ACCOUNT LOADED** 💸\n\n` +
-      `✅ Added massive balance to your wallet.\n` +
-      `👤 Owner: **AzukiDan**`
+      `💸 **flying cheat money** 💸\n\n` +
+      `✅ received 100Qaqig money.\n` +
+      `👤 To: **AzukiDan**`
     );
   } catch (e) {
     console.error(e);
