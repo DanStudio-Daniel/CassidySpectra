@@ -5,12 +5,12 @@ import axios from "axios";
 export const meta: CassidySpectra.CommandMeta = {
   name: "ngl",
   description: "Send anonymous messages via NGL.link API",
-  version: "1.1.0",
+  version: "1.2.0",
   author: "AzukiDan",
   category: "Fun",
   permissions: [0],
   icon: "📩",
-  cmdType: "cplx_g", // Spectra Complex G type
+  cmdType: "cplx_g",
 };
 
 const configs: Config[] = [
@@ -19,7 +19,7 @@ const configs: Config[] = [
     description: "Submit an NGL message.",
     async handler({ output }, { spectralArgs }) {
       const username = spectralArgs[0];
-      // Support for \n by replacing the string literal with actual newlines
+      // Support for \n space by replacing literal \n with real newlines
       let message = spectralArgs.slice(1).join(" ").replace(/\\n/g, "\n");
 
       if (!username || !message) {
@@ -32,10 +32,15 @@ const configs: Config[] = [
 
       try {
         await axios.post("https://ngl.link/api/submit", 
-          `username=${username}&question=${encodeURIComponent(message)}&deviceId=7c28c83a-4467-4d2a-8b83-8a356075c345`, 
+          `username=${username}&question=${encodeURIComponent(message)}&deviceId=bb2476e3-519d-4767-9c9e-2646f9038202`, 
           {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+              "Accept": "*/*",
+              "X-Requested-With": "XMLHttpRequest",
+              "Referer": `https://ngl.link/${username}`,
+              "Origin": "https://ngl.link",
+              "User-Agent": "Mozilla/5.0 (Linux; Android 10; SM-G960F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36"
             }
           }
         );
@@ -45,7 +50,7 @@ const configs: Config[] = [
           `   📩  **NGL SENT**  📩\n` +
           `${borderMid}\n` +
           `👤 **To:** ${username}\n` +
-          `💬 **Msg:** ${message}\n` +
+          `💬 **Msg:**\n${message}\n` +
           `${borderBot}`
         );
       } catch (e) {
