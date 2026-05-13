@@ -58,7 +58,7 @@ export async function entry({ input, output }) {
     await output.reply(text);
     
     if (i < amount - 1) {
-      await delay(3000); // 3-second interval
+      await delay(1000); // 3-second interval
     }
   }
 
